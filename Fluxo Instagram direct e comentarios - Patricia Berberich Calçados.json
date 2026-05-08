@@ -1,0 +1,1391 @@
+{
+  "name": "Fluxo Instagram direct e comentarios - Patricia Berberich Calçados",
+  "nodes": [
+    {
+      "parameters": {
+        "promptType": "define",
+        "text": "=Mensagem: {{ $('Dados do Webhook').item.json.text }}\n\nData Atual: {{ $json.data_atual }}\nHora Atual: {{ $json.hora_atual }}\n\n\n",
+        "options": {
+          "systemMessage": "=# PERSONA\nVocê é *Paula, atendente da loja **Patricia Berberich Calçados*.\nSua função é atender clientes no WhatsApp de forma simpática, prestativa e eficiente.\nVocê deve agir como uma pessoa real, não como um robô.\n\n# VARIÁVEIS IMPORTANTES\n- O link do WhatsApp da atendente SEMPRE deve ser obtido via ferramenta `dados_loja`.\n- Nunca invente ou modifique o link.\n\n# REGRAS DE OURO (OBRIGATÓRIO)\n1. Atendimento 24h:\nNunca diga que está fora do horário. Apenas informe o horário se perguntarem.\n\n2. Sem emojis.\n\n3. Zero alucinação:\nNunca invente preços, produtos, estoque ou links.\nSe não souber algo, peça mais detalhes.\n\n4. Linguagem:\nFrases curtas, naturais e com português correto.\n\n5. PROIBIDO (CRÍTICO):\n- Nunca alterar o link do WhatsApp\n- Nunca concatenar texto dentro do link\n- Nunca adicionar mensagem do cliente no link\n- Nunca usar parâmetros extras no link\n\n# REGRA DE REDIRECIONAMENTO PARA WHATSAPP\n\nSempre que o cliente demonstrar interesse em:\n- preço (valor, quanto custa, preço)\n- entrega (entrega, vocês entregam, frete)\n- querer (quero)\n\nFAÇA EXATAMENTE ISSO:\n\n1. Chame a tool `dados_loja`\n2. Pegue o link do WhatsApp\n3. Responda no formato EXATO abaixo:\n\nEiii {{ $('Dados do Webhook').item.json.from_username }}, tudo joia? Aqui é a Paula, atendente virtual da Patrícia Berberich, entre em contato com a nossa atendente pelo WhatsApp, ela vai te ajudar com tudo certinho:\n\n[LINK_AQUI]\n\nREGRAS DO LINK:\n- O link deve estar sozinho em uma linha\n- Não pode ter texto antes ou depois na mesma linha\n- Não pode ser alterado\n- Não pode conter mensagem do cliente\n\n\n\n# INSTRUÇÕES DE RESPOSTA\n\n- Responda direto ao ponto\n- Use no máximo 3 frases curtas\n- Use quebra de linha para facilitar leitura\n\n\n# USO DE TOOLS\n\n- Use `dados_loja` sempre que precisar:\n  - WhatsApp\n\n- Nunca invente dados\n\n---\n\nEntrada do Usuário:\n{{ $('Dados do Webhook').item.json.text }}"
+        }
+      },
+      "type": "@n8n/n8n-nodes-langchain.agent",
+      "typeVersion": 3,
+      "position": [
+        1552,
+        -48
+      ],
+      "id": "68f44a65-faa9-4add-9c1b-102596ad537b",
+      "name": "AI Agent"
+    },
+    {
+      "parameters": {
+        "model": {
+          "__rl": true,
+          "mode": "list",
+          "value": "gpt-4.1-mini"
+        },
+        "builtInTools": {},
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.lmChatOpenAi",
+      "typeVersion": 1.3,
+      "position": [
+        1520,
+        80
+      ],
+      "id": "06f88364-df50-4652-977f-5b1b1ffd318e",
+      "name": "OpenAI Chat Model",
+      "credentials": {
+        "openAiApi": {
+          "id": "0pO6LPq1Q5N0A175",
+          "name": "OpenAi account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "8831caa7-927c-48f2-9718-d016e5e43762",
+              "name": "text_message",
+              "value": "={{ $json.output }}",
+              "type": "string"
+            },
+            {
+              "id": "3347fb8a-d497-4873-9d55-0f62fd684fac",
+              "name": "from_id",
+              "value": "={{ $('Dados do Webhook').item.json.from_id }}",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        1984,
+        -16
+      ],
+      "id": "2b182fde-014e-4769-b294-6ba97af9a961",
+      "name": "Prepare Text Response Data"
+    },
+    {
+      "parameters": {
+        "content": "Webhook & Initial Processing Section\n",
+        "height": 1440,
+        "width": 1024
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "typeVersion": 1,
+      "position": [
+        -656,
+        -192
+      ],
+      "id": "54da2962-a0df-4887-a5fa-1bc741f132aa",
+      "name": "Sticky Note"
+    },
+    {
+      "parameters": {
+        "content": "Text Processing\n",
+        "height": 320,
+        "width": 1728,
+        "color": 4
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "typeVersion": 1,
+      "position": [
+        448,
+        -96
+      ],
+      "id": "4cc523fc-9bcb-4fef-986a-df94ea84efa3",
+      "name": "Sticky Note1"
+    },
+    {
+      "parameters": {
+        "content": "Response Handler",
+        "height": 272,
+        "width": 560,
+        "color": 6
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "typeVersion": 1,
+      "position": [
+        2432,
+        -96
+      ],
+      "id": "be287661-d77c-4382-8e25-ec0f1288e7b4",
+      "name": "Sticky Note5"
+    },
+    {
+      "parameters": {
+        "jsCode": "// n8n usa JavaScript, não Python dentro do Function Node\n// (mas o equivalente ao código Python que falamos antes)\n\nconst agora = new Date().toLocaleString('pt-BR', {\n  timeZone: 'America/Sao_Paulo',\n});\n\nconst data = new Date().toLocaleDateString('pt-BR', {\n  timeZone: 'America/Sao_Paulo',\n  weekday: 'long',\n  day: '2-digit',\n  month: 'long',\n  year: 'numeric',\n});\n\nconst hora = new Date().toLocaleTimeString('pt-BR', {\n  timeZone: 'America/Sao_Paulo',\n  hour: '2-digit',\n  minute: '2-digit',\n});\n\nreturn [\n  {\n    data_atual: data,\n    hora_atual: hora,\n    data_hora_completa: agora,\n  },\n];\n"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        1104,
+        -48
+      ],
+      "id": "d142e53e-e254-4c95-8b65-ba9833869a80",
+      "name": "DATA_HORA"
+    },
+    {
+      "parameters": {
+        "operation": "get",
+        "documentURL": "https://docs.google.com/document/d/1yDoc3sQwfXynekYlMgjIjBo6B4SBxnlZfXJDuQMFvJQ/edit?tab=t.0"
+      },
+      "type": "n8n-nodes-base.googleDocsTool",
+      "typeVersion": 2,
+      "position": [
+        1760,
+        80
+      ],
+      "id": "56360965-d543-4531-a77a-8d563cb78f35",
+      "name": "dados_loja",
+      "credentials": {
+        "googleDocsOAuth2Api": {
+          "id": "fTIkIgBsFjRdtK5K",
+          "name": "Google Docs account 2"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "760e0365-a96f-4d29-bacb-7b087c182437",
+              "name": "from_id",
+              "value": "={{ $json.body.entry[0].changes[0].value.from.id }}",
+              "type": "string"
+            },
+            {
+              "id": "5c6423ce-d9be-471d-a816-b19b18c11fba",
+              "name": "from_username",
+              "value": "={{ $json.body.entry[0].changes[0].value.from.username }}",
+              "type": "string"
+            },
+            {
+              "id": "1da8ca4e-c033-483a-b67a-ae7046b5f087",
+              "name": "media_i",
+              "value": "={{ $json.body.entry[0].changes[0].value.media.id }}",
+              "type": "string"
+            },
+            {
+              "id": "998b916e-c759-4b80-b691-d8f3b55d2e79",
+              "name": "media_type",
+              "value": "={{ $json.body.entry[0].changes[0].value.media.media_product_type }}",
+              "type": "string"
+            },
+            {
+              "id": "027a2c4f-fbb4-4438-bff6-f1b0c9e4419c",
+              "name": "id",
+              "value": "={{ $json.body.entry[0].changes[0].value.id }}",
+              "type": "string"
+            },
+            {
+              "id": "ef0e2fc9-5285-46b2-be34-03b4e8447181",
+              "name": "text",
+              "value": "={{ $json.body.entry[0].changes[0].value.text }}",
+              "type": "string"
+            },
+            {
+              "id": "238ba2d0-9586-470f-8d90-3d0ed57f1823",
+              "name": "field",
+              "value": "={{ $json.body.entry[0].changes[0].field }}",
+              "type": "string"
+            },
+            {
+              "id": "631638b4-a7de-496d-b3a3-ca47d69684f8",
+              "name": "message_text",
+              "value": "={{ $json.body.entry[0].messaging[0].message.text }}",
+              "type": "string"
+            },
+            {
+              "id": "0c17b121-a605-490a-a92c-ead78050b610",
+              "name": "message_id",
+              "value": "={{ $json.body.entry[0].messaging[0].message.mid }}",
+              "type": "string"
+            },
+            {
+              "id": "4fc5620d-afdf-4648-82f7-57a0d4cf8155",
+              "name": "recipient_id",
+              "value": "={{ $json.body.entry[0].messaging[0].recipient.id }}",
+              "type": "string"
+            },
+            {
+              "id": "27731512-96a5-4cde-b82d-0eb25f6cf7ef",
+              "name": "sender_id",
+              "value": "={{ $json.body.entry[0].messaging[0].sender.id }}",
+              "type": "string"
+            },
+            {
+              "id": "358f22fe-af3f-4dd7-8c9f-3e90ea425cb6",
+              "name": "arquivo",
+              "value": "={{ $json.body.entry[0].messaging[0].message.attachments }}",
+              "type": "string"
+            },
+            {
+              "id": "0bda8e91-1575-4f17-9853-ef472a7ab82f",
+              "name": "meu_id",
+              "value": "={{ $json.body.entry[0].id }}",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        -368,
+        64
+      ],
+      "id": "e4fe4b80-71f7-49b6-aa66-0423db404740",
+      "name": "Dados do Webhook"
+    },
+    {
+      "parameters": {
+        "httpMethod": "POST",
+        "path": "852f049f-7241-4219-987d-33f3f72cd050",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.webhook",
+      "typeVersion": 2.1,
+      "position": [
+        -608,
+        384
+      ],
+      "id": "7a673268-fd23-4ac1-98e7-ddfaba7adf50",
+      "name": "Webhook",
+      "webhookId": "852f049f-7241-4219-987d-33f3f72cd050"
+    },
+    {
+      "parameters": {
+        "rules": {
+          "values": [
+            {
+              "conditions": {
+                "options": {
+                  "caseSensitive": true,
+                  "leftValue": "",
+                  "typeValidation": "strict",
+                  "version": 3
+                },
+                "conditions": [
+                  {
+                    "leftValue": "={{ $json.field }}",
+                    "rightValue": "comments",
+                    "operator": {
+                      "type": "string",
+                      "operation": "equals"
+                    },
+                    "id": "7ade3147-4bf5-4635-9833-a64f98a29cc7"
+                  }
+                ],
+                "combinator": "and"
+              },
+              "renameOutput": true,
+              "outputKey": "comments"
+            },
+            {
+              "conditions": {
+                "options": {
+                  "caseSensitive": true,
+                  "leftValue": "",
+                  "typeValidation": "strict",
+                  "version": 3
+                },
+                "conditions": [
+                  {
+                    "id": "8d3fdb0d-ffe4-4614-9610-4fe05a1003f2",
+                    "leftValue": "={{ $json.message_id }}",
+                    "rightValue": "true",
+                    "operator": {
+                      "type": "string",
+                      "operation": "notEmpty",
+                      "singleValue": true
+                    }
+                  }
+                ],
+                "combinator": "and"
+              },
+              "renameOutput": true,
+              "outputKey": "message"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.switch",
+      "typeVersion": 3.4,
+      "position": [
+        64,
+        48
+      ],
+      "id": "ed8a94b8-71d6-42b9-bd47-7d74a8d774b5",
+      "name": "Switch"
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict",
+            "version": 2
+          },
+          "conditions": [
+            {
+              "id": "48bfe38a-35e1-4a34-98dc-bb58d1fa643a",
+              "leftValue": "={{ $('Webhook').item.json.body.entry[0].messaging[0].message.is_echo }}",
+              "rightValue": "",
+              "operator": {
+                "type": "boolean",
+                "operation": "true",
+                "singleValue": true
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.2,
+      "position": [
+        -32,
+        768
+      ],
+      "id": "e3647595-9fd0-4e21-acf0-20eb8bbb2a23",
+      "name": "If"
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict",
+            "version": 2
+          },
+          "conditions": [
+            {
+              "id": "48bfe38a-35e1-4a34-98dc-bb58d1fa643a",
+              "leftValue": "={{ $('Webhook').item.json.body.entry[0].messaging[0].recipient.id }}",
+              "rightValue": "17841405392959648",
+              "operator": {
+                "type": "string",
+                "operation": "equals"
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.2,
+      "position": [
+        -32,
+        560
+      ],
+      "id": "4e0cd6b5-925f-4286-bdad-3c874657b032",
+      "name": "If1"
+    },
+    {
+      "parameters": {
+        "rules": {
+          "values": [
+            {
+              "conditions": {
+                "options": {
+                  "caseSensitive": true,
+                  "leftValue": "",
+                  "typeValidation": "strict",
+                  "version": 2
+                },
+                "conditions": [
+                  {
+                    "leftValue": "={{ $('Webhook').item.json.body.entry[0].messaging[0].message.attachments[0].type }}",
+                    "rightValue": "audio",
+                    "operator": {
+                      "type": "string",
+                      "operation": "equals"
+                    },
+                    "id": "562f8d3f-58ae-42dc-bbbe-1b354d968a12"
+                  }
+                ],
+                "combinator": "and"
+              },
+              "renameOutput": true,
+              "outputKey": "Audio"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.switch",
+      "typeVersion": 3.3,
+      "position": [
+        208,
+        576
+      ],
+      "id": "cdc84c9d-57b5-43a2-9d4d-6c764d01b829",
+      "name": "Switch1"
+    },
+    {
+      "parameters": {
+        "url": "={{ $('Webhook').item.json.body.entry[0].messaging[0].message.attachments[0].payload.url }}",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.3,
+      "position": [
+        752,
+        576
+      ],
+      "id": "cb196267-e6df-47ec-b97e-b65201ea90fa",
+      "name": "Dowload Audio"
+    },
+    {
+      "parameters": {
+        "resource": "audio",
+        "operation": "transcribe",
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.openAi",
+      "typeVersion": 2,
+      "position": [
+        1072,
+        576
+      ],
+      "id": "87bfdab5-3004-45ec-beca-6bc01f5af8ab",
+      "name": "Transcribe a recording",
+      "credentials": {
+        "openAiApi": {
+          "id": "0pO6LPq1Q5N0A175",
+          "name": "OpenAi account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "promptType": "define",
+        "text": "=Mnessagem: {{ $json.text }}\n\nData Atual: {{ $('DATA_HORA3').item.json.data_atual }}\nHora Atual: {{ $('DATA_HORA3').item.json.hora_atual }}\n",
+        "options": {
+          "systemMessage": "=# PERSONA\nVocê é Paula, atendente virtual da loja Patricia Berberich Calçados.\nFale como uma pessoa real, simpática e objetiva. Nunca pareça um robô.\n\n# VARIÁVEIS IMPORTANTES\n- O link do WhatsApp da atendente SEMPRE deve ser obtido via ferramenta `dados_loja2`.\n- Nunca invente ou modifique o link.\n\n# REGRAS DE OURO (OBRIGATÓRIO)\n1. Atendimento 24h:\nNunca diga que está fora do horário. Apenas informe o horário se perguntarem.\n\n2. Sem emojis.\n\n3. Sem repetição:\nNão repita informações já enviadas no histórico.\n\n4. Zero alucinação:\nNunca invente preços, produtos, estoque ou links.\nSe não souber algo, peça mais detalhes.\n\n5. Linguagem:\nFrases curtas, naturais e com português correto.\n\n6. PROIBIDO (CRÍTICO):\n- Nunca alterar o link do WhatsApp\n- Nunca concatenar texto dentro do link\n- Nunca adicionar mensagem do cliente no link\n- Nunca usar parâmetros extras no link\n\n# REGRA DE REDIRECIONAMENTO PARA WHATSAPP\n\nSempre que o cliente demonstrar interesse em:\n- preço (valor, quanto custa, preço)\n- entrega (entrega, vocês entregam, frete)\n\nFAÇA EXATAMENTE ISSO:\n\n1. Chame a tool `dados_loja2`\n2. Pegue o link do WhatsApp\n3. Responda no formato EXATO abaixo:\n\nEntre em contato com a nossa atendente pelo WhatsApp, ela vai te ajudar com tudo certinho:\n\n[LINK_AQUI]\n\nREGRAS DO LINK:\n- O link deve estar sozinho em uma linha\n- Não pode ter texto antes ou depois na mesma linha\n- Não pode ser alterado\n- Não pode conter mensagem do cliente\n\n# PROTOCOLO DE SAUDAÇÃO\n\nSe for a primeira mensagem da conversa:\n\"Eii, tudo bem? Aqui quem fala é a Paula, atendente virtual da Patricia Berberich.\"\n\nSe já houver histórico:\n- NÃO se apresente novamente\n\n# INSTRUÇÕES DE RESPOSTA\n\n- Responda direto ao ponto\n- Use no máximo 3 frases curtas\n- Use quebra de linha para facilitar leitura\n\nSe não entender o pedido:\n\"Pode me explicar melhor o que você procura?\"\n\n# USO DE TOOLS\n\n- Use `dados_loja2` sempre que precisar:\n  - endereço\n  - horário\n  - descrição\n  - WhatsApp\n\n- Se já estiver no contexto, não precisa chamar novamente\n\n- Nunca invente dados\n\n---\n\nEntrada do Usuário:\n{{ $json.text }}\nHistórico:\n{{ $json.historico_conversa }}"
+        }
+      },
+      "type": "@n8n/n8n-nodes-langchain.agent",
+      "typeVersion": 3,
+      "position": [
+        1472,
+        496
+      ],
+      "id": "9e6f53f1-1b16-4333-b429-fc1bf56ecec8",
+      "name": "AI Agent3"
+    },
+    {
+      "parameters": {
+        "model": {
+          "__rl": true,
+          "mode": "list",
+          "value": "gpt-4.1-mini"
+        },
+        "builtInTools": {},
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.lmChatOpenAi",
+      "typeVersion": 1.3,
+      "position": [
+        1376,
+        640
+      ],
+      "id": "b02a8229-ca3b-4372-861e-bb86a7f72fa6",
+      "name": "OpenAI Chat Model3",
+      "credentials": {
+        "openAiApi": {
+          "id": "0pO6LPq1Q5N0A175",
+          "name": "OpenAi account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "8831caa7-927c-48f2-9718-d016e5e43762",
+              "name": "text_message",
+              "value": "={{ $json.output }}",
+              "type": "string"
+            },
+            {
+              "id": "3347fb8a-d497-4873-9d55-0f62fd684fac",
+              "name": "sende_id",
+              "value": "={{ $('Dados do Webhook').item.json.sender_id }}",
+              "type": "string"
+            },
+            {
+              "id": "a3a8eb18-3a0c-49ad-b280-95f4c97c92fe",
+              "name": "recipient_id",
+              "value": "={{ $('Dados do Webhook').item.json.recipient_id }}",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        1936,
+        528
+      ],
+      "id": "72a64786-ffd9-456c-9b54-386e3a86160d",
+      "name": "Prepare Text Response Data5"
+    },
+    {
+      "parameters": {
+        "content": "Audio Processing\n",
+        "height": 336,
+        "width": 1712,
+        "color": 2
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "typeVersion": 1,
+      "position": [
+        448,
+        464
+      ],
+      "id": "cb1eb7ec-2500-4f02-9197-b0cd4f9278b1",
+      "name": "Sticky Note4"
+    },
+    {
+      "parameters": {
+        "sessionIdType": "customKey",
+        "sessionKey": "={{ $('Dados do Webhook').item.json.recipient_id }}",
+        "contextWindowLength": 1
+      },
+      "type": "@n8n/n8n-nodes-langchain.memoryRedisChat",
+      "typeVersion": 1.5,
+      "position": [
+        1568,
+        1104
+      ],
+      "id": "8ccdc4dd-8ef2-431d-a658-702e6368127a",
+      "name": "Redis Chat Memory1",
+      "credentials": {
+        "redis": {
+          "id": "ldzqohIT4OHSBg0d",
+          "name": "Redis loja"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "sessionIdType": "customKey",
+        "sessionKey": "={{ $('Dados do Webhook').item.json.recipient_id }}",
+        "contextWindowLength": 1
+      },
+      "type": "@n8n/n8n-nodes-langchain.memoryRedisChat",
+      "typeVersion": 1.5,
+      "position": [
+        1504,
+        640
+      ],
+      "id": "476713e6-999b-4a18-98a1-4d77592a37e0",
+      "name": "Redis Chat Memory3",
+      "credentials": {
+        "redis": {
+          "id": "ldzqohIT4OHSBg0d",
+          "name": "Redis loja"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "jsCode": "// n8n usa JavaScript, não Python dentro do Function Node\n// (mas o equivalente ao código Python que falamos antes)\n\nconst agora = new Date().toLocaleString('pt-BR', {\n  timeZone: 'America/Sao_Paulo',\n});\n\nconst data = new Date().toLocaleDateString('pt-BR', {\n  timeZone: 'America/Sao_Paulo',\n  weekday: 'long',\n  day: '2-digit',\n  month: 'long',\n  year: 'numeric',\n});\n\nconst hora = new Date().toLocaleTimeString('pt-BR', {\n  timeZone: 'America/Sao_Paulo',\n  hour: '2-digit',\n  minute: '2-digit',\n});\n\nreturn [\n  {\n    data_atual: data,\n    hora_atual: hora,\n    data_hora_completa: agora,\n  },\n];\n"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        544,
+        576
+      ],
+      "id": "eae8c260-2c66-43d3-877b-d04414dad55d",
+      "name": "DATA_HORA3"
+    },
+    {
+      "parameters": {
+        "operation": "get",
+        "documentURL": "1yDoc3sQwfXynekYlMgjIjBo6B4SBxnlZfXJDuQMFvJQ"
+      },
+      "type": "n8n-nodes-base.googleDocsTool",
+      "typeVersion": 2,
+      "position": [
+        1664,
+        656
+      ],
+      "id": "7e722546-6f88-4b39-9ef8-a1f1f659094d",
+      "name": "dados_loja2",
+      "credentials": {
+        "googleDocsOAuth2Api": {
+          "id": "fTIkIgBsFjRdtK5K",
+          "name": "Google Docs account 2"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "rules": {
+          "values": [
+            {
+              "conditions": {
+                "options": {
+                  "caseSensitive": true,
+                  "leftValue": "",
+                  "typeValidation": "strict",
+                  "version": 2
+                },
+                "conditions": [
+                  {
+                    "leftValue": "={{ $('Webhook').item.json.body.entry[0].messaging[0].message.attachments }}",
+                    "rightValue": "",
+                    "operator": {
+                      "type": "array",
+                      "operation": "exists",
+                      "singleValue": true
+                    },
+                    "id": "562f8d3f-58ae-42dc-bbbe-1b354d968a12"
+                  }
+                ],
+                "combinator": "and"
+              },
+              "renameOutput": true,
+              "outputKey": "Arquivo"
+            },
+            {
+              "conditions": {
+                "options": {
+                  "caseSensitive": true,
+                  "leftValue": "",
+                  "typeValidation": "strict",
+                  "version": 2
+                },
+                "conditions": [
+                  {
+                    "id": "3b286e80-e255-47f6-8223-c3ca2ec5f837",
+                    "leftValue": "={{ $('Webhook').item.json.body.entry[0].messaging[0].message.attachments }}",
+                    "rightValue": "",
+                    "operator": {
+                      "type": "array",
+                      "operation": "notExists",
+                      "singleValue": true
+                    }
+                  }
+                ],
+                "combinator": "and"
+              },
+              "renameOutput": true,
+              "outputKey": "Text"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.switch",
+      "typeVersion": 3.3,
+      "position": [
+        -224,
+        656
+      ],
+      "id": "573c48a0-bb80-4090-8dfc-0d9dea666f59",
+      "name": "Switch2"
+    },
+    {
+      "parameters": {
+        "promptType": "define",
+        "text": "=Mensagem: {{ $('If').item.json.message_text }}\n\nData Atual: {{ $json.data_atual }}\nHora Atual: {{ $json.hora_atual }}\n\n\n",
+        "options": {
+          "systemMessage": "=# PERSONA\nVocê é Paula, atendente virtual da loja Patricia Berberich Calçados.\nFale como uma pessoa real, simpática e objetiva. Nunca pareça um robô.\n\n# VARIÁVEIS IMPORTANTES\n- O link do WhatsApp da atendente SEMPRE deve ser obtido via ferramenta `dados_loja1`.\n- Nunca invente ou modifique o link.\n\n# REGRAS DE OURO (OBRIGATÓRIO)\n1. Atendimento 24h:\nNunca diga que está fora do horário. Apenas informe o horário se perguntarem.\n\n2. Sem emojis.\n\n3. Sem repetição:\nNão repita informações já enviadas no histórico.\n\n4. Zero alucinação:\nNunca invente preços, produtos, estoque ou links.\nSe não souber algo, peça mais detalhes.\n\n5. Linguagem:\nFrases curtas, naturais e com português correto.\n\n6. PROIBIDO (CRÍTICO):\n- Nunca alterar o link do WhatsApp\n- Nunca concatenar texto dentro do link\n- Nunca adicionar mensagem do cliente no link\n- Nunca usar parâmetros extras no link\n\n# REGRA DE REDIRECIONAMENTO PARA WHATSAPP\n\nSempre que o cliente demonstrar interesse em:\n- preço (valor, quanto custa, preço)\n- entrega (entrega, vocês entregam, frete)\n- querer (quero)\n\nFAÇA EXATAMENTE ISSO:\n\n1. Chame a tool `dados_loja1`\n2. Pegue o link do WhatsApp\n3. Responda no formato EXATO abaixo:\n\nEntre em contato com a nossa atendente pelo WhatsApp, ela vai te ajudar com tudo certinho:\n\n[LINK_AQUI]\n\nREGRAS DO LINK:\n- O link deve estar sozinho em uma linha\n- Não pode ter texto antes ou depois na mesma linha\n- Não pode ser alterado\n- Não pode conter mensagem do cliente\n\n# REGRA DE CONFIRMAÇÃO DE CONTATO (PRIORIDADE ALTA)\n\nSe o cliente disser algo como:\n- \"chamei no WhatsApp\"\n- \"já chamei\"\n- \"já mandei mensagem\"\n- \"falei lá\"\n- \"já entrei em contato\"\n\nResponda EXATAMENTE:\n\nPerfeito! \n\nAguarde um pouquinho que nossa atendente já vai te responder por lá.\n\n# PROTOCOLO DE SAUDAÇÃO\n\nSe for a primeira mensagem da conversa:\n\"Eii, tudo bem? Aqui quem fala é a Paula, atendente virtual da Patricia Berberich.\"\n\nSe já houver histórico:\n- NÃO se apresente novamente\n\n# INSTRUÇÕES DE RESPOSTA\n\n- Responda direto ao ponto\n- Use no máximo 3 frases curtas\n- Use quebra de linha para facilitar leitura\n\nSe não entender o pedido:\n\"Pode me explicar melhor o que você procura?\"\n\n# USO DE TOOLS\n\n- Use `dados_loja1` sempre que precisar:\n  - endereço\n  - horário\n  - descrição\n  - WhatsApp\n\n- Se já estiver no contexto, não precisa chamar novamente\n\n- Nunca invente dados\n\n---\n\nEntrada do Usuário:\n{{ $('If').item.json.message_text }}\nHistórico:\n{{ $json.historico_conversa }}"
+        }
+      },
+      "type": "@n8n/n8n-nodes-langchain.agent",
+      "typeVersion": 3,
+      "position": [
+        1488,
+        960
+      ],
+      "id": "d09cbc8a-0d14-46e2-a112-5b1f3ed0083f",
+      "name": "AI Agent1"
+    },
+    {
+      "parameters": {
+        "model": {
+          "__rl": true,
+          "mode": "list",
+          "value": "gpt-4.1-mini"
+        },
+        "builtInTools": {},
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.lmChatOpenAi",
+      "typeVersion": 1.3,
+      "position": [
+        1360,
+        1104
+      ],
+      "id": "8360a748-a777-41fb-b27b-c6ee494d6bf4",
+      "name": "OpenAI Chat Model1",
+      "credentials": {
+        "openAiApi": {
+          "id": "0pO6LPq1Q5N0A175",
+          "name": "OpenAi account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "8831caa7-927c-48f2-9718-d016e5e43762",
+              "name": "text_message",
+              "value": "={{ $json.output }}",
+              "type": "string"
+            },
+            {
+              "id": "3347fb8a-d497-4873-9d55-0f62fd684fac",
+              "name": "sende_id",
+              "value": "={{ $('Dados do Webhook').item.json.sender_id }}",
+              "type": "string"
+            },
+            {
+              "id": "a3a8eb18-3a0c-49ad-b280-95f4c97c92fe",
+              "name": "recipient_id",
+              "value": "={{ $('Dados do Webhook').item.json.recipient_id }}",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        2000,
+        992
+      ],
+      "id": "d64232e9-93e7-4a71-8ecc-a022078af676",
+      "name": "Prepare Text Response Data1"
+    },
+    {
+      "parameters": {
+        "content": "Text Processing\n",
+        "height": 320,
+        "width": 1728,
+        "color": 4
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "typeVersion": 1,
+      "position": [
+        464,
+        912
+      ],
+      "id": "be4426c2-5aff-459c-b851-60c8138a632e",
+      "name": "Sticky Note3"
+    },
+    {
+      "parameters": {
+        "content": "Response Handler",
+        "height": 288,
+        "width": 368,
+        "color": 6
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "typeVersion": 1,
+      "position": [
+        2432,
+        560
+      ],
+      "id": "7804e1c7-629b-4449-9a11-630e7315cf88",
+      "name": "Sticky Note6"
+    },
+    {
+      "parameters": {
+        "jsCode": "// n8n usa JavaScript, não Python dentro do Function Node\n// (mas o equivalente ao código Python que falamos antes)\n\nconst agora = new Date().toLocaleString('pt-BR', {\n  timeZone: 'America/Sao_Paulo',\n});\n\nconst data = new Date().toLocaleDateString('pt-BR', {\n  timeZone: 'America/Sao_Paulo',\n  weekday: 'long',\n  day: '2-digit',\n  month: 'long',\n  year: 'numeric',\n});\n\nconst hora = new Date().toLocaleTimeString('pt-BR', {\n  timeZone: 'America/Sao_Paulo',\n  hour: '2-digit',\n  minute: '2-digit',\n});\n\nreturn [\n  {\n    data_atual: data,\n    hora_atual: hora,\n    data_hora_completa: agora,\n  },\n];\n"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        640,
+        976
+      ],
+      "id": "87a4560c-a985-47b7-9e36-e7c702bde1da",
+      "name": "DATA_HORA1"
+    },
+    {
+      "parameters": {
+        "operation": "get",
+        "documentURL": "https://docs.google.com/document/d/1yDoc3sQwfXynekYlMgjIjBo6B4SBxnlZfXJDuQMFvJQ/edit?tab=t.0"
+      },
+      "type": "n8n-nodes-base.googleDocsTool",
+      "typeVersion": 2,
+      "position": [
+        1712,
+        1088
+      ],
+      "id": "05dd4ba8-92f1-4c06-af5a-f7d4fdf44421",
+      "name": "dados_loja1",
+      "credentials": {
+        "googleDocsOAuth2Api": {
+          "id": "fTIkIgBsFjRdtK5K",
+          "name": "Google Docs account 2"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict",
+            "version": 3
+          },
+          "conditions": [
+            {
+              "id": "37020848-dac9-4036-9118-a82f1e4a940e",
+              "leftValue": "={{ $json.from_id }}",
+              "rightValue": "={{ $json.meu_id }}",
+              "operator": {
+                "type": "string",
+                "operation": "notEquals"
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.filter",
+      "typeVersion": 2.3,
+      "position": [
+        688,
+        -64
+      ],
+      "id": "6258c0f2-4dec-45b3-8eb1-4e683b57bab4",
+      "name": "Filter"
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "=https://graph.instagram.com/v25.0/17841405392959649/messages ",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "Authorization",
+              "value": "Bearer IGAATao70Bd6JBZAFpQNTJJdUZAWWFBEcUpUdFh0d0t2UjA5YS1MNUQxaDYtLUNKX25xUWY0c0VlN0lrOFkzc1hGWktDbmJHZA3hScDNZAX0NmZAmY2X241aFdkZAWp3bXNWQ1ZAmLVFHSTNUdlJ3bHVLWGstSkV0UjdONU9iX3hhVFZABUQZDZD"
+            }
+          ]
+        },
+        "sendBody": true,
+        "bodyParameters": {
+          "parameters": [
+            {
+              "name": "recipient.id",
+              "value": "={{ $('Dados do Webhook').item.json.from_id }}"
+            },
+            {
+              "name": "message.text",
+              "value": "={{ $('AI Agent').item.json.output }}"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.3,
+      "position": [
+        2784,
+        -16
+      ],
+      "id": "cf4bee80-d75b-40b9-b253-6110b269192d",
+      "name": "Send Message"
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "=https://graph.instagram.com/v25.0/{{ $('Dados do Webhook').item.json.id }}/replies ",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "Authorization",
+              "value": "Bearer IGAATao70Bd6JBZAFpQNTJJdUZAWWFBEcUpUdFh0d0t2UjA5YS1MNUQxaDYtLUNKX25xUWY0c0VlN0lrOFkzc1hGWktDbmJHZA3hScDNZAX0NmZAmY2X241aFdkZAWp3bXNWQ1ZAmLVFHSTNUdlJ3bHVLWGstSkV0UjdONU9iX3hhVFZABUQZDZD"
+            }
+          ]
+        },
+        "sendBody": true,
+        "bodyParameters": {
+          "parameters": [
+            {
+              "name": "recipient.id",
+              "value": "={{ $('Dados do Webhook').item.json.from_id }}"
+            },
+            {
+              "name": "message",
+              "value": "=Eii @{{ $('Dados do Webhook').item.json.from_username }},  tudo joia? Entre em contato com a nossa atendente, WhatsApp é (31) 9 99345-6562 ou o link do WhatsApp está em nosso perfil!!!"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.3,
+      "position": [
+        2496,
+        -16
+      ],
+      "id": "0c36162a-2c14-4a7a-aff5-b5d72ddef618",
+      "name": "Reply comments"
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "=https://graph.instagram.com/v25.0/17841405392959649/messages ",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "Authorization",
+              "value": "Bearer IGAATao70Bd6JBZAFpQNTJJdUZAWWFBEcUpUdFh0d0t2UjA5YS1MNUQxaDYtLUNKX25xUWY0c0VlN0lrOFkzc1hGWktDbmJHZA3hScDNZAX0NmZAmY2X241aFdkZAWp3bXNWQ1ZAmLVFHSTNUdlJ3bHVLWGstSkV0UjdONU9iX3hhVFZABUQZDZD"
+            }
+          ]
+        },
+        "sendBody": true,
+        "bodyParameters": {
+          "parameters": [
+            {
+              "name": "recipient.id",
+              "value": "={{ $json.sende_id }}"
+            },
+            {
+              "name": "message.text",
+              "value": "={{ $json.text_message }}"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.3,
+      "position": [
+        2592,
+        672
+      ],
+      "id": "efdaff46-022c-47bc-beaa-9a483eb3f03e",
+      "name": "Send Message1"
+    }
+  ],
+  "pinData": {
+    "Webhook": [
+      {
+        "json": {
+          "headers": {
+            "host": "n8n.infrabot.com.br",
+            "user-agent": "Webhooks/1.0 (https://fb.me/webhooks)",
+            "content-length": "310",
+            "accept": "*/*",
+            "content-type": "application/json",
+            "x-forwarded-for": "66.220.149.112",
+            "x-forwarded-host": "n8n.infrabot.com.br",
+            "x-forwarded-port": "443",
+            "x-forwarded-proto": "https",
+            "x-forwarded-server": "1d5f38092f23",
+            "x-hub-signature": "sha1=912c7f79db4173ed4a1ec2f721ee8342597d0f1d",
+            "x-hub-signature-256": "sha256=3852c71ca8edb91b2e34d41eed770679da35c1294b687ff787ea952bebb64831",
+            "x-real-ip": "66.220.149.112",
+            "accept-encoding": "gzip"
+          },
+          "params": {},
+          "query": {},
+          "body": {
+            "entry": [
+              {
+                "id": "17841405392959649",
+                "time": 1778088263,
+                "changes": [
+                  {
+                    "value": {
+                      "from": {
+                        "id": "1626061168478166",
+                        "username": "loja.ribamaria"
+                      },
+                      "media": {
+                        "id": "18316646047261213",
+                        "media_product_type": "FEED"
+                      },
+                      "id": "18094336499266386",
+                      "text": "Valor ?"
+                    },
+                    "field": "comments"
+                  }
+                ]
+              }
+            ],
+            "object": "instagram"
+          },
+          "webhookUrl": "https://n8n.infrabot.com.br/webhook/852f049f-7241-4219-987d-33f3f72cd050",
+          "executionMode": "production"
+        },
+        "pairedItem": {
+          "item": 0
+        }
+      }
+    ]
+  },
+  "connections": {
+    "AI Agent": {
+      "main": [
+        [
+          {
+            "node": "Prepare Text Response Data",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "OpenAI Chat Model": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Prepare Text Response Data": {
+      "main": [
+        [
+          {
+            "node": "Reply comments",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "DATA_HORA": {
+      "main": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "dados_loja": {
+      "ai_tool": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "ai_tool",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Dados do Webhook": {
+      "main": [
+        [
+          {
+            "node": "Switch",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Webhook": {
+      "main": [
+        [
+          {
+            "node": "Dados do Webhook",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Switch": {
+      "main": [
+        [
+          {
+            "node": "Filter",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Switch2",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "If": {
+      "main": [
+        [],
+        [
+          {
+            "node": "DATA_HORA1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "If1": {
+      "main": [
+        [],
+        [
+          {
+            "node": "Switch1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Switch1": {
+      "main": [
+        [
+          {
+            "node": "DATA_HORA3",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Dowload Audio": {
+      "main": [
+        [
+          {
+            "node": "Transcribe a recording",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Transcribe a recording": {
+      "main": [
+        [
+          {
+            "node": "AI Agent3",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "AI Agent3": {
+      "main": [
+        [
+          {
+            "node": "Prepare Text Response Data5",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "OpenAI Chat Model3": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "AI Agent3",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Prepare Text Response Data5": {
+      "main": [
+        [
+          {
+            "node": "Send Message1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Redis Chat Memory1": {
+      "ai_memory": [
+        [
+          {
+            "node": "AI Agent1",
+            "type": "ai_memory",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Redis Chat Memory3": {
+      "ai_memory": [
+        [
+          {
+            "node": "AI Agent3",
+            "type": "ai_memory",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "DATA_HORA3": {
+      "main": [
+        [
+          {
+            "node": "Dowload Audio",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "dados_loja2": {
+      "ai_tool": [
+        [
+          {
+            "node": "AI Agent3",
+            "type": "ai_tool",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Switch2": {
+      "main": [
+        [
+          {
+            "node": "If1",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "If",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "AI Agent1": {
+      "main": [
+        [
+          {
+            "node": "Prepare Text Response Data1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "OpenAI Chat Model1": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "AI Agent1",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Prepare Text Response Data1": {
+      "main": [
+        [
+          {
+            "node": "Send Message1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "DATA_HORA1": {
+      "main": [
+        [
+          {
+            "node": "AI Agent1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "dados_loja1": {
+      "ai_tool": [
+        [
+          {
+            "node": "AI Agent1",
+            "type": "ai_tool",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Filter": {
+      "main": [
+        [
+          {
+            "node": "DATA_HORA",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Reply comments": {
+      "main": [
+        [
+          {
+            "node": "Send Message",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": true,
+  "settings": {
+    "executionOrder": "v1",
+    "availableInMCP": false
+  },
+  "versionId": "752ade5c-6b64-4357-beb0-445554531c55",
+  "meta": {
+    "instanceId": "eef3705f200de992d91a2e94678cc093e5cec84967a9bf2b12ccd7e53446c6fa"
+  },
+  "id": "lnzAIQ9dM6PXsLYG",
+  "tags": []
+}
